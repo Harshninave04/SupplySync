@@ -2,12 +2,21 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import authRoutes from './routes/authRoutes.js';
+import { errorHandler } from './middleware/errorMiddleware.js';
 
 // Load environment variables
 dotenv.config();
 
 // Initialize Express app
 const app = express();
+
+// Error Handler Middleware
+app.use(errorHandler);
+
+// Routes
+app.use('/api/auth', authRoutes)
+
 
 // Middleware
 app.use(express.json()); // Parse JSON bodies
