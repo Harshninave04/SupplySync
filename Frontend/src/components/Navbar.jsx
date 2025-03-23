@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
+  const { user, logout } = useAuth();
+  const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Check if the user is scrolling down
+      // Show navbar when scrolling up, hide when scrolling down
       if (currentScrollY > lastScrollY) {
-        setScrolled(true);
+        setVisible(false);
       } else {
-        setScrolled(false);
+        setVisible(true);
       }
 
-      // Update the last scroll position
+      // Always show navbar at the top of the page
+      if (currentScrollY === 0) {
+        setVisible(true);
+      }
+
       setLastScrollY(currentScrollY);
     };
 
@@ -29,8 +35,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`shadow-md z-10 transition-all duration-300 ease-in-out transform ${
-        scrolled ? '-translate-y-full' : 'translate-y-0'
+      className={`bg-white shadow-md transition-transform duration-300 z-10 ${
+        visible ? 'transform-none' : 'transform -translate-y-full'
       }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -43,16 +49,29 @@ const Navbar = () => {
 
           {/* Right Side: Navigation Links */}
           <div className="flex items-center space-x-4">
-            <Link
-              to="/login"
-              className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Register
-            </Link>
+            {user ? (
+              <>
+                <span className="text-gray-700">{user.name}</span>
+                <button
+                  onClick={logout}
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
