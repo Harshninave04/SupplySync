@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -7,6 +8,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('supplier');
   const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +29,9 @@ const Register = () => {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // Handle successful registration (e.g., redirect to login)
-      console.log('Registration successful:', data);
+      // Save user data and redirect to dashboard
+      login(data);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     }
