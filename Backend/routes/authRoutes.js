@@ -13,7 +13,13 @@ router.post(
   asyncHandler(async (req, res) => {
     const { name, email, password, role } = req.body;
 
-    // Check if user already exists
+    // Validate input
+    if (!name || !email || !password || !role) {
+      res.status(400);
+      throw new Error('Please fill all fields');
+    }
+
+    // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       res.status(400);
@@ -46,28 +52,25 @@ router.post(
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-router.post(
-  '/login',
-  asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
 
-    // Check if user exists
-    const user = await User.findOne({ email });
+  // Check if user exists
+  const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(401);
-      throw new Error('Invalid email or password');
-    }
-  }),
-);
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
+});
 
 // Generate JWT token
 const generateToken = (id) => {

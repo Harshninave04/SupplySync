@@ -5,22 +5,24 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
-// Load environment variables
 dotenv.config();
 
-// Initialize Express app
 const app = express();
 
-// Error Handler Middleware
-app.use(errorHandler);
+// Middleware
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Frontend URL
+    credentials: true,
+  }),
+);
+app.use(express.json()); // Parse JSON bodies
 
 // Routes
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authRoutes);
 
-
-// Middleware
-app.use(express.json()); // Parse JSON bodies
-app.use(cors()); // Enable CORS
+// Error Handler Middleware (must be after routes)
+app.use(errorHandler);
 
 // MongoDB Connection
 mongoose
@@ -33,6 +35,5 @@ app.get('/', (req, res) => {
   res.send('SupplySync Backend is running!');
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
