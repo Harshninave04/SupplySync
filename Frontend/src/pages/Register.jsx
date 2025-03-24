@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../../services/api';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -11,31 +12,25 @@ const Register = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password, role }),
-      });
+  try {
+    const { data } = await api.post('/auth/register', {
+      name,
+      email,
+      password,
+      role,
+    });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      // Save user data and redirect to dashboard
-      login(data);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    login(data);
+    navigate('/dashboard');
+  } catch (err) {
+    console.error('Registration error:', err); // Log full error for debugging
+    setError(err.response?.data?.message || err.message || 'An error occurred during registration');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
