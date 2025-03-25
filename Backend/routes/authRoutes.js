@@ -35,6 +35,7 @@ router.post(
     });
 
     if (user) {
+      console.log('User created:', user);
       res.status(201).json({
         _id: user._id,
         name: user.name,

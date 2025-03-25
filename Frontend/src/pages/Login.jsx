@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../../services/api'; // Import the Axios instance
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,27 +12,15 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      // Save user data and redirect to dashboard
-      login(data);
-      navigate('/dashboard');
+      const response = await api.post('/auth/login', { email, password });
+      login(response); // Update AuthContext with user data
+      navigate('/dashboard', { replace: true }); // Redirect to dashboard
     } catch (err) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || err.message || 'An error occurred during login');
     }
   };
 
@@ -68,7 +57,7 @@ const Login = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
-          Don't have an account?{' '}
+          Don’t have an account?{' '}
           <Link to="/register" className="text-black hover:underline">
             Register
           </Link>

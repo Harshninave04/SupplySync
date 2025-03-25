@@ -17,14 +17,16 @@ const handleSubmit = async (e) => {
   setError('');
 
   try {
-    const { data } = await api.post('/auth/register', {
+    const response = await api.post('/auth/register', {
       name,
       email,
       password,
       role,
     });
 
-    login(data);
+    console.log('API Response:', response); // Debugging
+
+    login(response);
     navigate('/dashboard');
   } catch (err) {
     console.error('Registration error:', err); // Log full error for debugging

@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -33,6 +34,11 @@ const Navbar = () => {
     };
   }, [lastScrollY]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
+
   return (
     <nav
       className={`bg-white shadow-md transition-transform duration-300 z-10 ${
@@ -53,7 +59,7 @@ const Navbar = () => {
               <>
                 <span className="text-gray-700">{user.name}</span>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                   Logout
                 </button>
