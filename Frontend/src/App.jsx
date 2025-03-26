@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* 404 Page */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>

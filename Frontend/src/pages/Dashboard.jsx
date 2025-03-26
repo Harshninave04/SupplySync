@@ -1,7 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -11,7 +18,7 @@ const Dashboard = () => {
           Welcome, {user?.name} ({user?.role})!
         </p>
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="mt-4 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
           Logout
         </button>
