@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../../services/api';
 
 const Inventory = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth(); // Use auth loading state
   const [inventory, setInventory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,36 +16,33 @@ const Inventory = () => {
     quantity: '',
   });
 
-  // // Stable fetch function with error handling
-  // const fetchInventory = useCallback(async () => {
-  //   if (!user || user.role !== 'supplier') return;
+  // Stable fetch function with error handling
+  const fetchInventory = useCallback(async () => {
+    if (!user || user.role !== 'supplier') return;
 
-  //   setIsLoading(true);
-  //   setError(null);
+    setIsLoading(true);
+    setError(null);
 
-  //   try {
-  //     const { data } = await api.get('/inventory');
-  //     setInventory(data);
-  //   } catch (err) {
-  //     setError(err.response?.data?.message || 'Failed to load inventory');
-  //     setInventory([]);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [user]);
+    try {
+      const { data } = await api.get('/inventory');
+      console.log('Fetched inventory:', data); // Debug the response
+      setInventory(Array.isArray(data) ? data : []); // Ensure data is an array
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Failed to load inventory';
+      console.error('Fetch inventory error:', err.response || err.message); // Debug the error
+      setError(errorMsg);
+      setInventory([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
-  // // Initial data load
-  // useEffect(() => {
-  //   const controller = new AbortController();
+  // Fetch inventory when user is authenticated and not loading
+  useEffect(() => {
+    if (authLoading || !user || user.role !== 'supplier') return;
 
-  //   const loadData = async () => {
-  //     await fetchInventory();
-  //   };
-
-  //   loadData();
-
-  //   return () => controller.abort();
-  // }, [fetchInventory]);
+    fetchInventory();
+  }, [authLoading, user, fetchInventory]);
 
   // Form submission handler
   const handleSubmit = async (e) => {
@@ -56,11 +53,12 @@ const Inventory = () => {
     try {
       const numericData = {
         ...formData,
-        price: parseFloat(formData.price),
-        quantity: parseInt(formData.quantity),
+        price: parseFloat(formData.price) || 0,
+        quantity: parseInt(formData.quantity, 10) || 0,
       };
 
       const { data } = await api.post('/inventory', numericData);
+      console.log('Added item:', data); // Debug the response
       setInventory((prev) => [data, ...prev]);
       setFormData({
         name: '',
@@ -70,13 +68,20 @@ const Inventory = () => {
         quantity: '',
       });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add item');
+      const errorMsg = err.response?.data?.message || 'Failed to add item';
+      console.error('Submit error:', err.response || err.message); // Debug the error
+      setError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Early returns for clear state management
+  // Early return for auth loading
+  if (authLoading) {
+    return <div className="p-8 text-center">Loading authentication...</div>;
+  }
+
+  // Early return for unauthorized access
   if (!user || user.role !== 'supplier') {
     return (
       <div className="p-8 text-center">
@@ -88,13 +93,13 @@ const Inventory = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6">Inventory Management</h1>
+    <div className="max-w-7xl py-12 mx-auto p-4 animate-fade-in">
+      <h1 className="text-3xl font-bold mb-6">Inventory Management</h1>
 
       {/* Error Display */}
       {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      {/* Add Item Form - Always Visible */}
+      {/* Add Item Form */}
       <div className="mb-8 p-4 bg-white rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Add New Item</h2>
         <form onSubmit={handleSubmit}>
