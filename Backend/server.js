@@ -11,8 +11,6 @@ dotenv.config();
 const app = express();
 app.use(express.json()); // Parse JSON bodies
 
-// Error Handler Middleware (must be after routes)
-app.use(errorHandler);
 
 // Middleware
 app.use(
@@ -26,6 +24,8 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
+// Error Handler Middleware (must be after routes)
+app.use(errorHandler);
 
 // MongoDB Connection
 mongoose

@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import NotFound from './components/NotFound';
+import Inventory from './pages/Inventory';
 
 function App() {
   return (
@@ -17,6 +18,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute>
+                <Inventory />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={
