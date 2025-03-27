@@ -3,11 +3,16 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
 
 const app = express();
+app.use(express.json()); // Parse JSON bodies
+
+// Error Handler Middleware (must be after routes)
+app.use(errorHandler);
 
 // Middleware
 app.use(
@@ -16,13 +21,11 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json()); // Parse JSON bodies
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
-// Error Handler Middleware (must be after routes)
-app.use(errorHandler);
 
 // MongoDB Connection
 mongoose
