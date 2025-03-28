@@ -58,9 +58,14 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className="text-gray-700">{user.name}</span>
+                <Link
+                  to="/inventory"
+                  className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
+                  Inventory
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  className="text-black bg-red-300 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hover:cursor-pointer">
                   Logout
                 </button>
               </>
