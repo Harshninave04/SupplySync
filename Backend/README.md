@@ -1,82 +1,64 @@
-SupplySync - Backend
+# SupplySync - Backend
 
-SupplySync backend is built using Node.js, Express.js, and MongoDB. It serves as the core of the SupplySync application, handling API requests, managing database interactions, and ensuring smooth backend operations.
+## Overview
+SupplySync backend is built using **Node.js**, **Express.js**, and **MongoDB**. It serves as the core of the SupplySync application, handling API requests, managing database interactions, and ensuring smooth backend operations.
 
-Features
+## Features
+- RESTful API endpoints for managing users, inventory, and orders
+- MongoDB database integration with Mongoose ORM
+- Authentication and authorization (JWT-based security)
+- Error handling and logging
+- Scalable and modular architecture
 
-RESTful API endpoints for managing users, inventory, and orders
+## Installation
 
-MongoDB database integration with Mongoose ORM
-
-Authentication and authorization (JWT-based security)
-
-Error handling and logging
-
-Scalable and modular architecture
-
-
-Installation
-
-Prerequisites
-
+### Prerequisites
 Ensure you have the following installed:
+- **Node.js** (latest stable version recommended)
+- **MongoDB** (locally or using a cloud provider like MongoDB Atlas)
 
-Node.js (latest stable version recommended)
+### Setup
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Harshninave04/supplysync-backend.git
+   cd supplysync-backend
+   ```
 
-MongoDB (locally or using a cloud provider like MongoDB Atlas)
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
+3. **Create a `.env` file** in the root directory and configure your environment variables:
+   ```env
+   PORT=5000
+   MONGO_URI=your-mongodb-connection-string
+   JWT_SECRET=your-secret-key
+   ```
 
-Setup
-
-1. Clone the repository:
-
-git clone https://github.com/Harshninave04/supplysync-backend.git
-cd supplysync-backend
-
-
-2. Install dependencies:
-
-npm install
-
-
-3. Create a .env file in the root directory and configure your environment variables:
-
-PORT=5000
-MONGO_URI=your-mongodb-connection-string
-JWT_SECRET=your-secret-key
-
-
-
-Running the Server
-
+## Running the Server
 To start the server, use:
-
+```bash
 npm start
-
-By default, the server runs on http://localhost:5000
+```
+By default, the server runs on **http://localhost:5000**
 
 For development mode with hot reloading:
-
+```bash
 npm run dev
+```
 
-Technologies Used
+## Technologies Used
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework for Node.js
+- **MongoDB & Mongoose** - Database and ODM
+- **JSON Web Token (JWT)** - Authentication
+- **Dotenv** - Environment variable management
 
-Node.js - JavaScript runtime
+## Contributing
+Feel free to submit **issues** or **pull requests** if you’d like to contribute to the project.
 
-Express.js - Web framework for Node.js
+## License
+This project is licensed under the **MIT License**.
 
-MongoDB & Mongoose - Database and ODM
-
-JSON Web Token (JWT) - Authentication
-
-Dotenv - Environment variable management
-
-
-Contributing
-
-Feel free to submit issues or pull requests if you’d like to contribute to the project.
-
-License
-
-This project is licensed under the MIT License.
 
