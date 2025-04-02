@@ -95,7 +95,7 @@ const Navbar = () => {
       </nav>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">
+        <div className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all duration-300 scale-100 animate-scale-in">
             <div className="px-6 py-4 bg-gray-800 text-white rounded-t-lg flex items-center">
               <svg
@@ -138,9 +138,10 @@ const Navbar = () => {
                 </button>
 
                 <button
-                  onClick={() => {
-                    logout();
-                    navigate('/login');
+                  onClick={async () => {
+                    setShowModal(false); // Close modal first
+                    await logout(); // Wait for logout to complete
+                    navigate('/login'); // Then navigate
                   }}
                   className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 flex items-center">
                   <svg
