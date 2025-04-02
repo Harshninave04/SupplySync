@@ -16,7 +16,7 @@ const Login = () => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      login(response); // Update AuthContext with user data
+      login(response.data); // Update AuthContext with user data
       navigate('/dashboard', { replace: true }); // Redirect to dashboard
     } catch (err) {
       console.error('Login error:', err);

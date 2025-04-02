@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
+    console.log('Loaded from localStorage on mount:', storedUser);
     if (storedUser && storedUser.token) {
       setUser(storedUser);
       api.defaults.headers.common['Authorization'] = `Bearer ${storedUser.token}`;
@@ -17,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    console.log('Logging in user:', userData); // Debugging
+    console.log('Logging in user:', userData);
 
     if (!userData || !userData.token) {
       console.error('Error: No token received!');
@@ -25,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     localStorage.setItem('user', JSON.stringify(userData));
+    console.log('Immediately after setItem:', localStorage.getItem('user')); // Check if it’s there
     setUser(userData);
     api.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
   };
