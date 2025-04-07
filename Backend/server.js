@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
+import orderRoutes from './routes/orderRoutes.js'
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/orders', orderRoutes); // Order routes
 
 // Error Handler Middleware (must be after routes)
 app.use(errorHandler);

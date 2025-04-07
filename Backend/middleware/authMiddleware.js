@@ -32,4 +32,13 @@ const isSupplier = (req, res, next) => {
   }
 };
 
-export { protect, isSupplier };
+const isRetailer = (req, res, next) => {
+  if (req.user && req.user.role === 'retailer') {
+    next();
+  } else {
+    res.status(403);
+    throw new Error('Not authorized as a retailer');
+  }
+}
+
+export { protect, isSupplier, isRetailer };
