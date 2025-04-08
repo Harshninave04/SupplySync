@@ -8,6 +8,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import NotFound from './components/NotFound';
 import Inventory from './pages/Inventory';
+import CreateOrder from './features/orders/CreateOrder';
+import OrderList from './features/orders/OrderList';
 
 function App() {
   return (
@@ -34,6 +36,23 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/orders/create"
+            element={
+              <ProtectedRoute>
+                <CreateOrder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <OrderList />
+              </ProtectedRoute>
+            }
+          />
+
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
