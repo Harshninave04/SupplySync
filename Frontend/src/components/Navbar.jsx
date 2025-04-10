@@ -35,13 +35,13 @@ const Navbar = () => {
     };
   }, [lastScrollY]);
 
-  const handleLogout = () => {
-    const confirmLogout = window.confirm('Are you sure you want to logout?');
-    if (confirmLogout) {
-      logout();
-      navigate('/login');
-    }
-  };
+  // const handleLogout = () => {
+  //   const confirmLogout = window.confirm('Are you sure you want to logout?');
+  //   if (confirmLogout) {
+  //     logout();
+  //     navigate('/login');
+  //   }
+  // };
 
 
   return (
@@ -64,11 +64,18 @@ const Navbar = () => {
               {user ? (
                 <>
                   <span className="text-gray-700">{user.name}</span>
-                  <Link
-                    to="/inventory"
-                    className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
-                    Inventory
-                  </Link>
+                  {user.role === 'retailer' && (
+                    <Link to="/orders/create" className="hover:text-blue-600">
+                      New Order
+                    </Link>
+                  )}
+                  {user.role === 'supplier' && (
+                    <Link
+                      to="/inventory"
+                      className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
+                      Inventory
+                    </Link>
+                  )}
                   <button
                     onClick={() => setShowModal(true)}
                     className="text-black bg-red-300 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hover:cursor-pointer">

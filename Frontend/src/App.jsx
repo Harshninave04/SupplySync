@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './components/NotFound';
 import Inventory from './pages/Inventory';
 import CreateOrder from './features/orders/CreateOrder';
-import OrderList from './features/orders/OrderList';
+// import OrderList from './features/orders/OrderList';
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+           <Route
             path="/orders/create"
             element={
               <ProtectedRoute>
@@ -44,14 +44,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/orders"
             element={
               <ProtectedRoute>
                 <OrderList />
               </ProtectedRoute>
             }
-          />
+          />  */}
+
+          {/* Protected Routes
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/orders/create" element={<CreateOrder />} />
+            <Route path="/orders" element={<OrderList />} />
+          </Route> */}
 
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
