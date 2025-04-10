@@ -20,6 +20,18 @@ router.get(
   }),
 );
 
+router.get('/supplier/:supplierId', protect, async (req, res) => {
+  try {
+    console.log('Fetching inventory for supplier:', req.params.supplierId);
+    const inventory = await Inventory.find({ supplier: req.params.supplierId });
+    console.log('Inventory found:', inventory);
+    res.json(inventory);
+  } catch (error) {
+    console.error('Error fetching inventory:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 // @desc    Add a new inventory item
 // @route   POST /api/inventory
 // @access  Private (Supplier only)
