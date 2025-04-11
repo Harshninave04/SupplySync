@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+  const {user} = useAuth(); // Assuming you have a useAuth hook to get user info
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Hero Section with Enhanced Design */}
@@ -27,16 +29,44 @@ const Home = () => {
               modern business landscape.
             </p>
             <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
-              <Link
-                to="/register"
-                className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                Get Started
-              </Link>
-              <Link
-                to="/login"
-                className="px-8 py-4 border border-gray-300 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-50 md:text-lg md:px-10 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-1">
-                Sign In
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                    Dashboard
+                  </Link>
+                  {
+                    user.role === 'supplier' && (
+                      <Link
+                        to="/inventory"
+                        className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                        Inventory
+                      </Link>
+                    )
+                  }
+                  {user.role === 'retailer' && (
+                    <Link
+                      to="/orders/create"
+                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                      New Order
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                    Get Started
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="px-8 py-4 border border-gray-300 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-50 md:text-lg md:px-10 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                    Sign In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
