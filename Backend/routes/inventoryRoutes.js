@@ -1,12 +1,12 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import Inventory from '../models/Inventory.js';
-import { protect, isSupplier } from '../middleware/authMiddleware.js'; // Add auth middleware later
+import { protect, isSupplier, isRetailer } from '../middleware/authMiddleware.js'; // Add auth middleware later
 
 const router = express.Router();
 
 // Apply to all routes
-router.use(protect, isSupplier);
+router.use(protect);
 
 // @desc    Get all inventory items for a supplier
 // @route   GET /api/inventory
@@ -20,7 +20,7 @@ router.get(
   }),
 );
 
-router.get('/supplier/:supplierId', protect, async (req, res) => {
+router.get('/supplier/:supplierId', protect, isRetailer, async (req, res) => {
   try {
     console.log('Fetching inventory for supplier:', req.params.supplierId);
     const inventory = await Inventory.find({ supplier: req.params.supplierId });
