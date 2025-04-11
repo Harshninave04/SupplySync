@@ -63,9 +63,11 @@ const Navbar = () => {
             <div className="flex items-center space-x-4">
               {user ? (
                 <>
-                  <span className="text-gray-700">{user.name}</span>
+                  <span className="text-gray-700 font-bold bg-sky-50 border-2 rounded-md px-3 py-2">{user.name}</span>
                   {user.role === 'retailer' && (
-                    <Link to="/orders/create" className="hover:text-blue-600">
+                    <Link
+                      to="/orders/create"
+                      className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
                       New Order
                     </Link>
                   )}
@@ -76,6 +78,11 @@ const Navbar = () => {
                       Inventory
                     </Link>
                   )}
+                  <Link
+                    to="/dashboard"
+                    className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
+                    Dashboard
+                  </Link>
                   <button
                     onClick={() => setShowModal(true)}
                     className="text-black bg-red-300 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hover:cursor-pointer">
@@ -148,7 +155,7 @@ const Navbar = () => {
                   onClick={async () => {
                     setShowModal(false); // Close modal first
                     await logout(); // Wait for logout to complete
-                    navigate('/login'); // Then navigate
+                    navigate('/'); // Then navigate
                   }}
                   className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 flex items-center">
                   <svg
