@@ -36,15 +36,13 @@ const Home = () => {
                     className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
                     Dashboard
                   </Link>
-                  {
-                    user.role === 'supplier' && (
-                      <Link
-                        to="/inventory"
-                        className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                        Inventory
-                      </Link>
-                    )
-                  }
+                  {user.role === 'supplier' && (
+                    <Link
+                      to="/inventory"
+                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                      Inventory
+                    </Link>
+                  )}
                   {user.role === 'retailer' && (
                     <Link
                       to="/orders/create"
@@ -308,11 +306,23 @@ const Home = () => {
             Join hundreds of businesses already using SupplySync to streamline their operations
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              to="/register"
-              className="px-8 py-4 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-              Start Free Trial
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/about"
+                  className="px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1">
+                  Know more about us
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="px-8 py-4 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                  Start Free Trial
+                </Link>
+              </>
+            )}
             <Link
               to="/contact"
               className="px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1">
