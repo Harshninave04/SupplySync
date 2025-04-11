@@ -40,7 +40,7 @@ const CreateOrder = () => {
     try {
       setLoading((prev) => ({ ...prev, inventory: true }));
       setError(null);
-      const { data } = await getSupplierInventory(supplierId);
+      const data  = await getSupplierInventory(supplierId);
       console.log('Inventory data:', data); // Debug log
       setInventory(data);
       setSelectedSupplier(supplierId);
