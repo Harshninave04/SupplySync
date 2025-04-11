@@ -8,6 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,19 +36,15 @@ const Navbar = () => {
     };
   }, [lastScrollY]);
 
-  // const handleLogout = () => {
-  //   const confirmLogout = window.confirm('Are you sure you want to logout?');
-  //   if (confirmLogout) {
-  //     logout();
-  //     navigate('/login');
-  //   }
-  // };
-
+  // Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
+  };
 
   return (
     <>
       <nav
-        className={`bg-white shadow-md transition-transform duration-300 z-10 ${
+        className={`bg-white shadow-md transition-transform duration-300 z-50 fixed w-full top-0 ${
           visible ? 'transform-none' : 'transform -translate-y-full'
         }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,11 +56,13 @@ const Navbar = () => {
               </Link>
             </div>
 
-            {/* Right Side: Navigation Links */}
-            <div className="flex items-center space-x-4">
+            {/* Right Side: Navigation Links (Desktop) */}
+            <div className="hidden md:flex items-center space-x-4">
               {user ? (
                 <>
-                  <span className="text-gray-700 font-bold bg-sky-50 border-2 rounded-md px-3 py-2">{user.name}</span>
+                  <span className="text-gray-700 font-bold bg-sky-50 border-2 rounded-md px-3 py-2">
+                    {user.name}
+                  </span>
                   {user.role === 'retailer' && (
                     <Link
                       to="/orders/create"
@@ -104,9 +103,94 @@ const Navbar = () => {
                 </>
               )}
             </div>
+
+            {/* Hamburger Menu (Mobile) */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={toggleMobileMenu}
+                className="text-gray-600 hover:text-gray-900 p-2 focus:outline-none"
+                aria-label="Toggle menu">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d={isMobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white shadow-md">
+            <div className="px-4 pt-2 pb-4 space-y-2">
+              {user ? (
+                <>
+                  <span className="block text-gray-700 font-bold bg-sky-50 border-2 rounded-md px-3 py-2 text-center">
+                    {user.name}
+                  </span>
+                  {user.role === 'retailer' && (
+                    <Link
+                      to="/orders/create"
+                      className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                      onClick={toggleMobileMenu}>
+                      New Order
+                    </Link>
+                  )}
+                  {user.role === 'supplier' && (
+                    <Link
+                      to="/inventory"
+                      className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                      onClick={toggleMobileMenu}>
+                      Inventory
+                    </Link>
+                  )}
+                  <Link
+                    to="/dashboard"
+                    className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                    onClick={toggleMobileMenu}>
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setShowModal(true);
+                      toggleMobileMenu();
+                    }}
+                    className="w-full text-black bg-red-300 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium text-center">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    onClick={toggleMobileMenu}>
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    onClick={toggleMobileMenu}>
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
+
+      {/* Spacer to prevent content overlap */}
+      <div className="h-16"></div>
 
       {showModal && (
         <div className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 animate-fade-in">
