@@ -33,20 +33,20 @@ const Home = () => {
                 <>
                   <Link
                     to="/dashboard"
-                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
                     Dashboard
                   </Link>
                   {user.role === 'supplier' && (
                     <Link
                       to="/inventory"
-                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
                       Inventory
                     </Link>
                   )}
                   {user.role === 'retailer' && (
                     <Link
                       to="/orders/create"
-                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
                       New Order
                     </Link>
                   )}
