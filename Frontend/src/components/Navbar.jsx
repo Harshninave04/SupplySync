@@ -64,18 +64,36 @@ const Navbar = () => {
                     {user.name}
                   </span>
                   {user.role === 'retailer' && (
-                    <Link
-                      to="/orders/create"
-                      className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
-                      New Order
-                    </Link>
+                    <>
+                      <Link
+                        to="/orders/create"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        New Order
+                      </Link>
+                      <Link
+                        to="/orders"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Cart
+                      </Link>
+                    </>
                   )}
                   {user.role === 'supplier' && (
-                    <Link
-                      to="/inventory"
-                      className="text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition duration-300 ease-in-out">
-                      Inventory
-                    </Link>
+                    <>
+                      <Link
+                        to="/inventory"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Inventory
+                      </Link>
+                      <Link
+                        to="/orders"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Cart
+                      </Link>
+                    </>
                   )}
                   <Link
                     to="/dashboard"
@@ -138,20 +156,36 @@ const Navbar = () => {
                     {user.name}
                   </span>
                   {user.role === 'retailer' && (
-                    <Link
-                      to="/orders/create"
-                      className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
-                      onClick={toggleMobileMenu}>
-                      New Order
-                    </Link>
+                    <>
+                      <Link
+                        to="/orders/create"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        New Order
+                      </Link>
+                      <Link
+                        to="/orders"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Cart
+                      </Link>
+                    </>
                   )}
                   {user.role === 'supplier' && (
-                    <Link
-                      to="/inventory"
-                      className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
-                      onClick={toggleMobileMenu}>
-                      Inventory
-                    </Link>
+                    <>
+                      <Link
+                        to="/inventory"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Inventory
+                      </Link>
+                      <Link
+                        to="/orders"
+                        className="block text-gray-600 hover:bg-blue-50 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out"
+                        onClick={toggleMobileMenu}>
+                        Cart
+                      </Link>
+                    </>
                   )}
                   <Link
                     to="/dashboard"
