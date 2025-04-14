@@ -1,53 +1,132 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useEffect, useState, useRef } from 'react';
 
 const Home = () => {
-  const {user} = useAuth(); // Assuming you have a useAuth hook to get user info
+  const { user } = useAuth();
+  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef(null);
+  const statsRef = useRef(null);
+  const featuresRef = useRef(null);
+  const processRef = useRef(null);
+  const [isVisible, setIsVisible] = useState({
+    stats: false,
+    features: false,
+    process: false,
+    testimonials: false,
+  });
+
+  // Animate on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+
+      // Check which sections are visible
+      const sections = {
+        stats: statsRef.current?.getBoundingClientRect().top < window.innerHeight * 0.75,
+        features: featuresRef.current?.getBoundingClientRect().top < window.innerHeight * 0.75,
+        process: processRef.current?.getBoundingClientRect().top < window.innerHeight * 0.75,
+      };
+
+      setIsVisible((prev) => ({
+        ...prev,
+        ...sections,
+      }));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check on initial load
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Moving gradient animation
+  const gradientPos = Math.min(scrollY * 0.05, 100);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Hero Section with Enhanced Design */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gray-900 opacity-5 pattern-grid-lg"></div>
+    <div className="min-h-screen overflow-hidden">
+      {/* Hero Section with Animated Background */}
+      <div ref={heroRef} className="relative overflow-hidden">
+        {/* Enhanced background gradient with more modern colors */}
+        <div
+          className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800"
+          style={{
+            backgroundSize: '400% 400%',
+            animation: 'gradient 15s ease infinite',
+          }}></div>
+
+        {/* Improved pattern overlay with subtle animation */}
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent)',
+              backgroundSize: '100px 100px',
+              animation: 'patternSlide 60s linear infinite',
+              transform: `translateY(${scrollY * 0.1}px)`,
+            }}></div>
+        </div>
+
+        {/* Animated particles */}
+        <div className="absolute inset-0 z-1 opacity-40">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%)',
+            }}></div>
+        </div>
+
+        {/* Content container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36 relative z-10">
           <div className="text-center">
-            <div className="inline-block mb-3">
-              <span className="text-sm font-bold tracking-wider bg-gray-900 text-white px-4 py-1 rounded-full uppercase">
+            <div className="inline-block mb-3 animate-fadeIn">
+              <span className="text-sm font-bold tracking-wider bg-white text-gray-900 px-4 py-1 rounded-full uppercase shadow-md">
                 Supply Chain Management
               </span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight animate-slideUp">
               <span className="block">Supply Chain</span>
-              <span className="block text-gray-800 relative">
+              <span className="block text-white relative">
                 <span className="relative inline-block">
                   Simplified
-                  <span className="absolute bottom-2 left-0 right-0 h-3 bg-gray-200 -z-10 transform -rotate-1"></span>
+                  {/* Underline effect */}
+                  <span className="absolute bottom-2 left-0 right-0 h-3 bg-indigo-500 opacity-30 -z-10 transform skew-x-3"></span>
                 </span>
               </span>
             </h1>
-            <p className="mt-6 text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p
+              className="mt-8 text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed animate-fadeIn opacity-0"
+              style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
               Connect suppliers and retailers in a seamless digital marketplace designed for the
               modern business landscape.
             </p>
-            <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
+            <div
+              className="mt-12 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 animate-fadeIn opacity-0"
+              style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
               {user ? (
                 <>
                   <Link
                     to="/dashboard"
-                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                    Dashboard
+                    className="relative overflow-hidden px-8 py-4 border border-transparent text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-8 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                    <span className="absolute inset-0 w-0 h-full transition-all duration-300 ease-out bg-gray-200 group-hover:w-full"></span>
+                    <span className="relative">Dashboard</span>
                   </Link>
                   {user.role === 'supplier' && (
                     <Link
                       to="/inventory"
-                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                      Inventory
+                      className="relative overflow-hidden px-8 py-4 border border-indigo-500 text-base font-medium rounded-md text-white bg-transparent hover:bg-indigo-500 md:text-lg md:px-8 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                      <span className="absolute inset-0 w-0 h-full transition-all duration-300 ease-out bg-indigo-600 group-hover:w-full"></span>
+                      <span className="relative">Inventory</span>
                     </Link>
                   )}
                   {user.role === 'retailer' && (
                     <Link
                       to="/orders/create"
-                      className="px-8 py-4 border border-blue-500 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 md:text-lg md:px-8 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                      New Order
+                      className="relative overflow-hidden px-8 py-4 border border-indigo-500 text-base font-medium rounded-md text-white bg-transparent hover:bg-indigo-500 md:text-lg md:px-8 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                      <span className="absolute inset-0 w-0 h-full transition-all duration-300 ease-out bg-indigo-600 group-hover:w-full"></span>
+                      <span className="relative">New Order</span>
                     </Link>
                   )}
                 </>
@@ -55,24 +134,35 @@ const Home = () => {
                 <>
                   <Link
                     to="/register"
-                    className="px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 md:text-lg md:px-10 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                    Get Started
+                    className="relative overflow-hidden px-8 py-4 border border-transparent text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                    <span className="absolute inset-0 w-0 h-full transition-all duration-300 ease-out bg-gray-200 group-hover:w-full"></span>
+                    <span className="relative">Get Started</span>
                   </Link>
                   <Link
                     to="/login"
-                    className="px-8 py-4 border border-gray-300 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-50 md:text-lg md:px-10 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-1">
-                    Sign In
+                    className="relative overflow-hidden px-8 py-4 border border-indigo-500 text-base font-medium rounded-md text-white bg-transparent hover:bg-indigo-500 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                    <span className="absolute inset-0 w-0 h-full transition-all duration-300 ease-out bg-indigo-600 group-hover:w-full"></span>
+                    <span className="relative">Sign In</span>
                   </Link>
                 </>
               )}
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"></div>
+
+        {/* Better bottom transition with gradient and blur */}
+        {/* <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white to-transparent backdrop-blur-sm"></div> */}
+
+        {/* Animated light effects instead of floating bubbles */}
+        <div className="hidden md:block">
+          <div className="absolute top-1/4 left-1/5 w-96 h-96 rounded-full bg-indigo-600 opacity-5 blur-3xl animate-pulse-slow"></div>
+          <div className="absolute bottom-1/4 right-1/5 w-80 h-80 rounded-full bg-blue-400 opacity-5 blur-3xl animate-pulse-slower"></div>
+          <div className="absolute top-1/2 right-1/3 w-64 h-64 rounded-full bg-purple-500 opacity-5 blur-3xl animate-pulse-slow"></div>
+        </div>
       </div>
 
-      {/* Statistics Section - New */}
-      <div className="bg-white py-16 border-t border-b border-gray-100">
+      {/* Statistics Section - With fade-in animation */}
+      <div ref={statsRef} className="bg-white py-16 border-t border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -81,8 +171,16 @@ const Home = () => {
               { value: '60%', label: 'Time Saved' },
               { value: '24/7', label: 'Support' },
             ].map((stat, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <span className="text-4xl md:text-5xl font-bold text-gray-900">{stat.value}</span>
+              <div
+                key={index}
+                className={`flex flex-col items-center transform ${
+                  isVisible.stats ? 'animate-fadeInUp opacity-100' : 'opacity-0'
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}>
+                <span className="text-4xl md:text-5xl font-bold text-gray-900 relative">
+                  {stat.value}
+                  <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+                </span>
                 <span className="text-sm uppercase tracking-wider text-gray-500 mt-2">
                   {stat.label}
                 </span>
@@ -92,8 +190,8 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="py-24 bg-white">
+      {/* Features Section - With slide-in animation */}
+      <div ref={featuresRef} className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-sm font-bold tracking-wider text-gray-500 uppercase">
@@ -166,11 +264,16 @@ const Home = () => {
                   </svg>
                 ),
               },
-            ].map((feature) => (
-              <div key={feature.name} className="relative">
-                <div className="flow-root bg-gray-50 rounded-xl px-8 py-10 h-full hover:shadow-md transition-shadow transform hover:-translate-y-1 border border-gray-100">
+            ].map((feature, index) => (
+              <div
+                key={feature.name}
+                className={`relative transform ${
+                  isVisible.features ? 'animate-fadeInUp opacity-100' : 'opacity-0'
+                }`}
+                style={{ animationDelay: `${index * 0.2}s` }}>
+                <div className="flow-root bg-gray-50 rounded-xl px-8 py-10 h-full hover:shadow-xl transition-all transform hover:-translate-y-2 border border-gray-100 group">
                   <div>
-                    <div className="flex items-center justify-center h-14 w-14 rounded-full bg-gray-900 text-white text-xl mx-auto mb-6">
+                    <div className="flex items-center justify-center h-14 w-14 rounded-full bg-gray-900 text-white text-xl mx-auto mb-6 group-hover:scale-110 transition-transform">
                       {feature.icon}
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 text-center mb-3">
@@ -185,8 +288,8 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Process Section - New */}
-      <div className="bg-gray-50 py-24 border-t border-b border-gray-100">
+      {/* Process Section - With step animation */}
+      <div ref={processRef} className="bg-gray-50 py-24 border-t border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-sm font-bold tracking-wider text-gray-500 uppercase">
@@ -218,14 +321,27 @@ const Home = () => {
                   'Receive, fulfill, and track orders through our streamlined, automated system.',
               },
             ].map((step, index) => (
-              <div key={index} className="relative">
-                <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 h-full">
-                  <div className="text-4xl font-bold text-gray-200 mb-4">{step.step}</div>
+              <div
+                key={index}
+                className={`relative transform ${
+                  isVisible.process ? 'animate-fadeInUp opacity-100' : 'opacity-0'
+                }`}
+                style={{ animationDelay: `${index * 0.2}s` }}>
+                <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 h-full hover:shadow-lg transition-all transform hover:-translate-y-1 group">
+                  <div className="text-4xl font-bold text-gray-200 mb-4 transition-all group-hover:text-gray-300">
+                    {step.step}
+                  </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
                   <p className="text-gray-600">{step.description}</p>
                 </div>
                 {index < 2 && (
-                  <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-1 bg-gray-300"></div>
+                  <div
+                    className="hidden md:block absolute top-1/2 -right-6 w-12 h-1 bg-gray-300 transform scale-x-0 animate-scaleX"
+                    style={{
+                      animationDelay: `${(index + 1) * 0.3}s`,
+                      animationFillMode: 'forwards',
+                      animationPlayState: isVisible.process ? 'running' : 'paused',
+                    }}></div>
                 )}
               </div>
             ))}
@@ -233,7 +349,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Testimonial Section */}
+      {/* Testimonial Section - With hover effects */}
       <div className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -277,9 +393,9 @@ const Home = () => {
             ].map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100">
+                className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all transform hover:-translate-y-1 hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gray-800 text-white flex items-center justify-center text-lg font-bold mr-4">
+                  <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gray-900 text-white flex items-center justify-center text-lg font-bold mr-4 hover:scale-110 transition-transform">
                     {testimonial.image}
                   </div>
                   <div>
@@ -296,9 +412,16 @@ const Home = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gray-900 py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* CTA Section - With animated background */}
+      <div className="bg-gray-900 py-20 relative overflow-hidden">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 25%), radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 20%)',
+            animation: 'pulse 10s infinite alternate',
+          }}></div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl tracking-tight">
             Ready to transform your supply chain?
           </h2>
@@ -310,23 +433,26 @@ const Home = () => {
               <>
                 <Link
                   to="/about"
-                  className="px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1">
-                  Know more about us
+                  className="relative overflow-hidden px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1 group">
+                  <span className="absolute inset-0 w-0 bg-gray-700 transition-all duration-300 ease-out group-hover:w-full"></span>
+                  <span className="relative">Know more about us</span>
                 </Link>
               </>
             ) : (
               <>
                 <Link
                   to="/register"
-                  className="px-8 py-4 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                  Start Free Trial
+                  className="relative overflow-hidden px-8 py-4 text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
+                  <span className="absolute inset-0 w-0 bg-gray-200 transition-all duration-500 ease-out group-hover:w-full"></span>
+                  <span className="relative">Start Free Trial</span>
                 </Link>
               </>
             )}
             <Link
               to="/contact"
-              className="px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1">
-              Schedule Demo
+              className="relative overflow-hidden px-8 py-4 text-base font-medium rounded-md text-white border border-gray-600 hover:bg-gray-800 md:text-lg md:px-10 transition-all transform hover:-translate-y-1 group">
+              <span className="absolute inset-0 w-0 bg-gray-700 transition-all duration-300 ease-out group-hover:w-full"></span>
+              <span className="relative">Schedule Demo</span>
             </Link>
           </div>
           <p className="mt-6 text-sm text-gray-400">No credit card required. 14-day free trial.</p>
@@ -341,22 +467,22 @@ const Home = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Product</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Features
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Pricing
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Integrations
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Updates
                   </a>
                 </li>
@@ -366,22 +492,22 @@ const Home = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Company</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     About
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Careers
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Contact
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Partners
                   </a>
                 </li>
@@ -391,22 +517,22 @@ const Home = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Resources</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Blog
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Documentation
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Guides
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Support
                   </a>
                 </li>
@@ -416,17 +542,17 @@ const Home = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Privacy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Terms
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                     Security
                   </a>
                 </li>
@@ -439,7 +565,10 @@ const Home = () => {
             </div>
             <div className="flex space-x-6">
               {['Twitter', 'LinkedIn', 'Facebook', 'GitHub'].map((social) => (
-                <a key={social} href="#" className="text-gray-400 hover:text-gray-500">
+                <a
+                  key={social}
+                  href="#"
+                  className="text-gray-400 hover:text-gray-800 transition-colors">
                   <span className="sr-only">{social}</span>
                   <span className="text-sm">{social}</span>
                 </a>
@@ -448,6 +577,159 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* CSS animations */}
+      <style jsx>
+        {`
+          @keyframes gradient {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+
+          @keyframes pulse {
+            0% {
+              opacity: 0.5;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+
+          @keyframes float {
+            0% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-20px);
+            }
+            100% {
+              transform: translateY(0px);
+            }
+          }
+
+          @keyframes panBackground {
+            0% {
+              background-position: 0px 0px;
+            }
+            100% {
+              background-position: 1000px 0px;
+            }
+          }
+
+          @keyframes fadeIn {
+            0% {
+              opacity: 0;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+
+          @keyframes fadeInUp {
+            0% {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes slideUp {
+            0% {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes scaleX {
+            0% {
+              transform: scaleX(0);
+            }
+            100% {
+              transform: scaleX(1);
+            }
+          }
+
+          .animate-fadeIn {
+            animation: fadeIn 1s ease-in-out;
+          }
+
+          .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out forwards;
+          }
+
+          .animate-slideUp {
+            animation: slideUp 0.8s ease-out;
+          }
+
+          .animate-scaleX {
+            animation: scaleX 0.5s ease-out forwards;
+          }
+
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+          @keyframes patternSlide {
+            0% {
+              background-position: 0 0;
+            }
+            100% {
+              background-position: 1000px 1000px;
+            }
+          }
+
+          @keyframes pulse-slow {
+            0% {
+              transform: scale(1);
+              opacity: 0.05;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 0.1;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 0.05;
+            }
+          }
+
+          @keyframes pulse-slower {
+            0% {
+              transform: scale(1);
+              opacity: 0.05;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 0.1;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 0.05;
+            }
+          }
+
+          .animate-pulse-slow {
+            animation: pulse-slow 10s ease-in-out infinite;
+          }
+
+          .animate-pulse-slower {
+            animation: pulse-slower 15s ease-in-out infinite;
+          }
+        `}
+      </style>
     </div>
   );
 };
