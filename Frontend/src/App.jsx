@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './components/NotFound';
 import Inventory from './pages/Inventory';
 import CreateOrder from './features/orders/CreateOrder';
+import OrderList from './features/orders/OrderList';
 // import OrderList from './features/orders/OrderList';
 
 function App() {
@@ -44,14 +45,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/orders"
             element={
               <ProtectedRoute>
                 <OrderList />
               </ProtectedRoute>
             }
-          />  */}
+          /> 
 
           {/* Protected Routes
           <Route element={<ProtectedRoute />}>

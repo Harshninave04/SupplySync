@@ -22,6 +22,11 @@ const OrderCard = ({ order, userRole }) => {
       <div className="flex justify-between items-start mb-2">
         <div>
           <h3 className="font-bold">Order #{order._id.slice(-6)}</h3>
+  {userRole === 'supplier' && (
+    <p className="text-md text-gray-700">
+      Retailer: <span className="font-medium">{order.retailer.name}</span>
+    </p>
+  )}
           <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
         </div>
         <span
@@ -42,7 +47,7 @@ const OrderCard = ({ order, userRole }) => {
         {order.items.map((item, index) => (
           <div key={index} className="flex justify-between py-2 border-b">
             <div>
-              <p>{item.name}</p>
+              <p>{item.product.name}</p>
               <p className="text-sm text-gray-600">
                 {item.quantity} × ${item.price.toFixed(2)}
               </p>
