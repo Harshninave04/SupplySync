@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { updateOrderStatus } from '../../../services/orderAPI';
 
-const OrderCard = ({ order, userRole }) => {
+const OrderCard = ({ order, userRole, onRefresh }) => {
   const [currentStatus, setCurrentStatus] = useState(order.status);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleStatusUpdate = async (newStatus) => {
     try {
       setIsUpdating(true);
       await updateOrderStatus(order._id, newStatus);
       setCurrentStatus(newStatus);
+      if (onRefresh) {
+        onRefresh();
+      }
     } catch (err) {
       console.error('Status update failed', err);
     } finally {
@@ -17,61 +21,312 @@ const OrderCard = ({ order, userRole }) => {
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'bg-yellow-50 text-yellow-800 border-yellow-200';
+      case 'Accepted':
+        return 'bg-blue-50 text-blue-800 border-blue-200';
+      case 'Shipped':
+        return 'bg-green-50 text-green-800 border-green-200';
+      case 'Cancelled':
+        return 'bg-red-50 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-50 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Pending':
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+      case 'Accepted':
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+      case 'Shipped':
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+            />
+          </svg>
+        );
+      case 'Cancelled':
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Calculate total items
+  const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Format date with day name
+  const formatDate = (dateString) => {
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
-    <div className="border rounded-lg p-4">
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <h3 className="font-bold">Order #{order._id.slice(-6)}</h3>
-  {userRole === 'supplier' && (
-    <p className="text-md text-gray-700">
-      Retailer: <span className="font-medium">{order.retailer.name}</span>
-    </p>
-  )}
-          <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
-        </div>
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            currentStatus === 'Pending'
-              ? 'bg-yellow-100 text-yellow-800'
-              : currentStatus === 'Accepted'
-              ? 'bg-blue-100 text-blue-800'
-              : currentStatus === 'Shipped'
-              ? 'bg-purple-100 text-purple-800'
-              : 'bg-green-100 text-green-800'
-          }`}>
-          {currentStatus}
-        </span>
-      </div>
-
-      <div className="mb-4">
-        {order.items.map((item, index) => (
-          <div key={index} className="flex justify-between py-2 border-b">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-200">
+      <div className="border-b border-gray-100">
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <p>{item.product.name}</p>
-              <p className="text-sm text-gray-600">
-                {item.quantity} × ${item.price.toFixed(2)}
-              </p>
+              <div className="flex items-center gap-3 mb-1">
+                <h3 className="font-bold text-lg">Order #{order._id.slice(-6)}</h3>
+                <span
+                  className={`px-3 py-1 rounded-full border text-xs font-medium flex items-center ${getStatusColor(
+                    currentStatus,
+                  )}`}>
+                  {getStatusIcon(currentStatus)}
+                  {currentStatus}
+                </span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  {formatDate(order.createdAt)}
+                </div>
+
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  {totalItems} {totalItems === 1 ? 'item' : 'items'}
+                </div>
+
+                {userRole === 'supplier' && (
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-1.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    {order.retailer.name}
+                  </div>
+                )}
+              </div>
             </div>
-            <p>${(item.price * item.quantity).toFixed(2)}</p>
+
+            <div className="flex items-center gap-3">
+              <div className="font-bold text-lg">${order.totalAmount.toFixed(2)}</div>
+
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 transition-transform ${
+                    isExpanded ? 'transform rotate-180' : ''
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="flex justify-between items-center">
-        <p className="font-bold">Total: ${order.totalAmount.toFixed(2)}</p>
+      <div
+        className={`transition-all duration-300 overflow-hidden ${
+          isExpanded ? 'max-h-96' : 'max-h-0'
+        }`}>
+        <div className="p-6">
+          <div className="mb-6">
+            <h4 className="font-medium mb-3 text-gray-700">Order Items</h4>
+            <div className="rounded-lg border overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Quantity
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {order.items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{item.product.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="text-sm text-gray-900">{item.quantity}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="text-sm text-gray-900">${item.price.toFixed(2)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="text-sm font-medium">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="row"
+                      colSpan="3"
+                      className="px-6 py-3 text-right text-sm font-medium text-gray-900">
+                      Order Total
+                    </th>
+                    <td className="px-6 py-3 text-right text-sm font-bold">
+                      ${order.totalAmount.toFixed(2)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
 
-        {userRole === 'supplier' && (
-          <select
-            value={currentStatus}
-            onChange={(e) => handleStatusUpdate(e.target.value)}
-            disabled={isUpdating}
-            className="px-3 py-1 border rounded disabled:opacity-50">
-            <option value="Pending">Pending</option>
-            <option value="Accepted">Accept</option>
-            <option value="Shipped">Mark as Shipped</option>
-            <option value="Cancelled">Cancel</option>
-          </select>
-        )}
+          {order.shippingAddress && (
+            <div className="mb-6">
+              <h4 className="font-medium mb-2 text-gray-700">Shipping Address</h4>
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm">
+                {order.shippingAddress}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-between items-center pt-2 border-t">
+            <div className="text-sm text-gray-500">Order ID: {order._id}</div>
+
+            {userRole === 'supplier' && (
+              <div className="relative">
+                <select
+                  value={currentStatus}
+                  onChange={(e) => handleStatusUpdate(e.target.value)}
+                  disabled={isUpdating}
+                  className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50">
+                  <option value="Pending">Pending</option>
+                  <option value="Accepted">Accept Order</option>
+                  <option value="Shipped">Mark as Shipped</option>
+                  <option value="Cancelled">Cancel Order</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg
+                    className="fill-current h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                  </svg>
+                </div>
+                {isUpdating && (
+                  <div className="absolute right-0 top-0 mt-2 mr-10">
+                    <div className="animate-spin h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full"></div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
