@@ -4,8 +4,27 @@ import axios
 
 export const createOrder = (orderData) => api.post('/orders', orderData);
 export const updateOrderStatus = (id, status) => api.patch(`/orders/${id}/status`, { status });
-export const getSupplierOrders = () => api.get('/orders/supplier');
-export const getRetailerOrders = () => api.get('/orders/retailer');
+export const getSupplierOrders = async () => {
+  try {
+    const response = await api.get('/orders/supplier');
+    // console.log('Supplier orders response:', response.data); // Debug log
+    return response;
+  } catch (error) {
+    console.error('Error fetching supplier orders:', error);
+    throw error;
+  }
+};
+
+export const getRetailerOrders = async () => {
+  try {
+    const response = await api.get('/orders/retailer');
+    // console.log('Retailer orders response:', response.data); // Debug log
+    return response;
+  } catch (error) {
+    console.error('Error fetching retailer orders:', error);
+    throw error;
+  }
+};
 export const getSuppliers = () => api.get('/users/suppliers');
 // export const getSupplierInventory = (supplierId) => api.get(`/inventory/supplier/${supplierId}`);
 

@@ -61,4 +61,32 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-export { createOrder, updateOrderStatus };
+// @desc    Get all orders for supplier
+// @route   GET /api/orders/supplier
+const getSupplierOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ supplier: req.user._id })
+      .populate('retailer', 'name email') // optional, enrich data
+      .populate('items.product', 'name') // optional, enrich data
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Get all orders for retailer
+// @route   GET /api/orders/retailer
+const getRetailerOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ retailer: req.user._id })
+      .populate('supplier', 'name email') // optional
+      .populate('items.product', 'name') // optional, enrich data
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+export { createOrder, updateOrderStatus, getSupplierOrders, getRetailerOrders };  
