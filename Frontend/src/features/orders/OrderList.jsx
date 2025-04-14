@@ -53,33 +53,35 @@ const OrderList = () => {
     );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">
-        {user.role === 'supplier' ? 'Incoming' : 'Your'} Orders
-      </h1>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-2xl font-bold mb-6">
+          {user.role === 'supplier' ? 'Incoming' : 'Your'} Orders
+        </h1>
 
-      {orders.length === 0 ? (
-        <div className="bg-gray-50 p-8 text-center rounded-lg">
-          <p className="text-gray-500">
-            {user.role === 'supplier'
-              ? 'No incoming orders yet'
-              : 'You have not placed any orders yet'}
-          </p>
-          {user.role === 'retailer' && (
-            <button
-              onClick={() => Navigate('/orders/create')}
-              className="mt-4 px-4 py-2 bg-black text-white rounded-md">
-              Create Your First Order
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <OrderCard key={order._id} order={order} userRole={user.role} />
-          ))}
-        </div>
-      )}
+        {orders.length === 0 ? (
+          <div className="bg-gray-50 p-8 text-center rounded-lg">
+            <p className="text-gray-500">
+              {user.role === 'supplier'
+                ? 'No incoming orders yet'
+                : 'You have not placed any orders yet'}
+            </p>
+            {user.role === 'retailer' && (
+              <button
+                onClick={() => Navigate('/orders/create')}
+                className="mt-4 px-4 py-2 bg-black text-white rounded-md">
+                Create Your First Order
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <OrderCard key={order._id} order={order} userRole={user.role} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
