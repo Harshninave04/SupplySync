@@ -73,8 +73,8 @@ const Navbar = () => {
               <Link to="/" className="group flex items-center">
                 <div className="flex items-center">
                   <div className="relative mr-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg transform rotate-12 absolute"></div>
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg absolute transform -rotate-6"></div>
+                    <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg transform rotate-12 absolute"></div>
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg absolute transform -rotate-6"></div>
                     <div className="w-8 h-8 bg-white rounded-lg shadow-md relative z-10 flex items-center justify-center">
                       <span className="text-indigo-600 font-bold text-xl">S</span>
                     </div>
