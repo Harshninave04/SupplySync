@@ -47,3 +47,21 @@ export const getSupplierInventory = async (supplierId) => {
     throw error; // Rethrow the error for further handling if needed
   }
 };
+
+export const getOrderById = async (orderId) => {
+  try {
+    const response = await fetch(`/api/orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store the token in localStorage
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Failed to fetch order ${orderId}: ${error.message}`);
+  }
+};

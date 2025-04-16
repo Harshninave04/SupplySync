@@ -2,11 +2,24 @@ import { useState } from 'react';
 import { updateOrderStatus } from '../../../services/orderAPI';
 
 const OrderCard = ({ order, userRole, onRefresh }) => {
-  const [currentStatus, setCurrentStatus] = useState(order.status);
+  const [currentStatus, setCurrentStatus] = useState(order.status || 'Pending');
   const [isUpdating, setIsUpdating] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Log the full order prop
+  console.log('OrderCard received order:', order);
+
+  // Validate order._id
+  const isValidOrder = order && order._id && order._id !== '' && order._id !== null;
+  if (!isValidOrder) {
+    console.warn('OrderCard received invalid order (missing or empty _id):', order);
+  }
+
   const handleStatusUpdate = async (newStatus) => {
+    if (!isValidOrder) {
+      console.error('Cannot update status: Order ID is invalid');
+      return;
+    }
     try {
       setIsUpdating(true);
       await updateOrderStatus(order._id, newStatus);
@@ -20,6 +33,35 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
       setIsUpdating(false);
     }
   };
+
+  // Fallback if order is invalid
+  if (!isValidOrder) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-red-200">
+        <div className="flex items-center gap-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <h3 className="font-bold text-lg text-red-700">Invalid Order</h3>
+            <p className="text-sm text-gray-600">
+              Order ID is missing or invalid. Please contact support.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -108,13 +150,40 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
   };
 
   // Calculate total items
-  const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   // Format date with day name
   const formatDate = (dateString) => {
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return dateString ? new Date(dateString).toLocaleDateString(undefined, options) : 'N/A';
   };
+
+  // Fallback if order._id is missing
+  if (!order?._id) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-red-200">
+        <div className="flex items-center gap-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <h3 className="font-bold text-lg text-red-700">Invalid Order</h3>
+            <p className="text-sm text-gray-600">Order ID is missing. Please contact support.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-200">
@@ -183,14 +252,14 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                       />
                     </svg>
-                    {order.retailer.name}
+                    {order.retailer?.name || 'Unknown Retailer'}
                   </div>
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="font-bold text-lg">${order.totalAmount.toFixed(2)}</div>
+              <div className="font-bold text-lg">${(order.totalAmount || 0).toFixed(2)}</div>
 
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -250,24 +319,32 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {order.items.map((item, index) => (
+                  {order.items?.map((item, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{item.product.name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.product?.name || 'Unknown Product'}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-sm text-gray-900">{item.quantity}</div>
+                        <div className="text-sm text-gray-900">{item.quantity || 0}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-sm text-gray-900">${item.price.toFixed(2)}</div>
+                        <div className="text-sm text-gray-900">${(item.price || 0).toFixed(2)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="text-sm font-medium">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )) || (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                        No items available
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
                 <tfoot className="bg-gray-50">
                   <tr>
@@ -278,7 +355,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                       Order Total
                     </th>
                     <td className="px-6 py-3 text-right text-sm font-bold">
-                      ${order.totalAmount.toFixed(2)}
+                      ${(order.totalAmount || 0).toFixed(2)}
                     </td>
                   </tr>
                 </tfoot>
@@ -303,7 +380,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                 <select
                   value={currentStatus}
                   onChange={(e) => handleStatusUpdate(e.target.value)}
-                  disabled={isUpdating}
+                  disabled={isUpdating || !order._id}
                   className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50">
                   <option value="Pending">Pending</option>
                   <option value="Accepted">Accept Order</option>

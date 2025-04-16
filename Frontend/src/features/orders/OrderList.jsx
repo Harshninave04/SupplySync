@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getSupplierOrders, getRetailerOrders } from '../../../services/orderAPI';
 import OrderCard from './OrderCard';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const OrderList = () => {
   const { user } = useAuth();
@@ -11,27 +11,73 @@ const OrderList = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
+  const { state } = useLocation(); // Access navigation state
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { data } =
-        user.role === 'supplier' ? await getSupplierOrders() : await getRetailerOrders();
+ const fetchOrders = async (retryCount = 0, maxRetries = 3) => {
+   try {
+     setLoading(true);
+     setError(null);
+     console.log('Fetching orders for user:', user.role, 'newOrderId:', state?.newOrderId);
+     const { data } =
+       user.role === 'supplier' ? await getSupplierOrders() : await getRetailerOrders();
 
-      console.log('Fetched orders:', data);
-      setOrders(data);
-    } catch (err) {
-      console.error('Order fetch error:', err);
-      setError('Failed to load orders');
-    } finally {
-      setLoading(false);
-    }
-  };
+     console.log('Fetched orders:', data);
+
+     // Validate orders
+     const validOrders = data.filter((order) => {
+       if (!order?._id || order._id === '' || order._id === null) {
+         console.warn('Invalid order (missing or empty _id):', order);
+         return false;
+       }
+       return true;
+     });
+
+     // If newOrderId is present, check if it's in validOrders
+     const newOrderId = state?.newOrderId;
+     let finalOrders = validOrders;
+
+     if (
+       newOrderId &&
+       !validOrders.some((order) => order._id === newOrderId) &&
+       retryCount < maxRetries
+     ) {
+       console.log(`New order ${newOrderId} not found, retrying (${retryCount + 1}/${maxRetries})`);
+       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s
+       return fetchOrders(retryCount + 1, maxRetries);
+     }
+
+     // Fallback: Fetch specific order by newOrderId
+     if (newOrderId && !validOrders.some((order) => order._id === newOrderId)) {
+       console.log(`Attempting to fetch order ${newOrderId} directly`);
+       try {
+         const { data: newOrder } = await getOrderById(newOrderId);
+         if (newOrder?._id && newOrder._id !== '' && newOrder._id !== null) {
+           console.log('Fetched new order:', newOrder);
+           finalOrders = [...validOrders, newOrder];
+         } else {
+           console.warn('Fetched order is invalid:', newOrder);
+         }
+       } catch (err) {
+         console.error(`Failed to fetch order ${newOrderId}:`, err);
+       }
+     }
+
+     setOrders(finalOrders);
+
+     if (newOrderId && !finalOrders.some((order) => order._id === newOrderId)) {
+       console.warn(`New order ${newOrderId} not found after retries and direct fetch`);
+     }
+   } catch (err) {
+     console.error('Order fetch error:', err);
+     setError('Failed to load orders: ' + err.message);
+   } finally {
+     setLoading(false);
+   }
+ };
 
   useEffect(() => {
     fetchOrders();
-  }, [user]);
+  }, [user, state?.newOrderId]); // Re-fetch if newOrderId changes
 
   const filteredOrders =
     filter === 'all' ? orders : orders.filter((order) => order.status === filter);
@@ -107,7 +153,7 @@ const OrderList = () => {
           <h2 className="text-2xl font-bold mb-2">Error Loading Orders</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={fetchOrders}
+            onClick={() => fetchOrders()}
             className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
             Retry
           </button>
@@ -222,7 +268,7 @@ const OrderList = () => {
                 key={order._id}
                 order={order}
                 userRole={user.role}
-                onRefresh={fetchOrders}
+                onRefresh={() => fetchOrders(0, 3)} // Pass retry params
               />
             ))}
           </div>

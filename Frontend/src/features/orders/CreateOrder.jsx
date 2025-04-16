@@ -95,14 +95,19 @@ const CreateOrder = () => {
     try {
       setLoading((prev) => ({ ...prev, submitting: true }));
       setError(null);
-      await createOrder({
+      const response = await createOrder({
         supplierId: selectedSupplier,
         items: cart,
         shippingAddress,
       });
-      navigate('/orders');
+      const orderId = response?.data?._id; // Assuming API returns { data: { _id, ... } }
+      if (!orderId) {
+        throw new Error('Order ID not returned from API');
+      }
+      console.log('Order created successfully:', { orderId, response });
+      navigate('/orders', { state: { newOrderId: orderId } }); // Pass orderId to /orders
     } catch (err) {
-      setError('Failed to place order');
+      setError('Failed to place order: ' + err.message);
       console.error('Order submission error:', err);
     } finally {
       setLoading((prev) => ({ ...prev, submitting: false }));
