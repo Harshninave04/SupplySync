@@ -6,9 +6,6 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Log the full order prop
-  console.log('OrderCard received order:', order);
-
   // Validate order._id
   const isValidOrder = order && order._id && order._id !== '' && order._id !== null;
   if (!isValidOrder) {
@@ -37,24 +34,26 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
   // Fallback if order is invalid
   if (!isValidOrder) {
     return (
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-red-200">
+      <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
         <div className="flex items-center gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-red-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <div className="bg-red-100 p-2 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
           <div>
-            <h3 className="font-bold text-lg text-red-700">Invalid Order</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="font-bold text-gray-800">Invalid Order</h3>
+            <p className="text-sm text-gray-500">
               Order ID is missing or invalid. Please contact support.
             </p>
           </div>
@@ -66,15 +65,30 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Pending':
-        return 'bg-yellow-50 text-yellow-800 border-yellow-200';
+        return 'border-yellow-400 bg-yellow-50';
       case 'Accepted':
-        return 'bg-blue-50 text-blue-800 border-blue-200';
+        return 'border-blue-400 bg-blue-50';
       case 'Shipped':
-        return 'bg-green-50 text-green-800 border-green-200';
+        return 'border-green-400 bg-green-50';
       case 'Cancelled':
-        return 'bg-red-50 text-red-800 border-red-200';
+        return 'border-red-400 bg-red-50';
       default:
-        return 'bg-gray-50 text-gray-800 border-gray-200';
+        return 'border-gray-400 bg-gray-50';
+    }
+  };
+
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Accepted':
+        return 'bg-blue-100 text-blue-800';
+      case 'Shipped':
+        return 'bg-green-100 text-green-800';
+      case 'Cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -84,7 +98,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor">
@@ -100,7 +114,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor">
@@ -116,7 +130,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor">
@@ -132,7 +146,7 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor">
@@ -158,117 +172,70 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
     return dateString ? new Date(dateString).toLocaleDateString(undefined, options) : 'N/A';
   };
 
-  // Fallback if order._id is missing
-  if (!order?._id) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-red-200">
-        <div className="flex items-center gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-red-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <div>
-            <h3 className="font-bold text-lg text-red-700">Invalid Order</h3>
-            <p className="text-sm text-gray-600">Order ID is missing. Please contact support.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-200">
-      <div className="border-b border-gray-100">
-        <div className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h3 className="font-bold text-lg">Order #{order._id.slice(-6)}</h3>
-                <span
-                  className={`px-3 py-1 rounded-full border text-xs font-medium flex items-center ${getStatusColor(
+    <div className="mb-6">
+      <div
+        className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 ${getStatusColor(
+          currentStatus,
+        )} transition-all duration-300`}>
+        {/* Header Section */}
+        <div className="px-6 py-5 flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-lg text-gray-800">#{order._id.slice(-6)}</h3>
+                <div
+                  className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${getStatusBadgeColor(
                     currentStatus,
                   )}`}>
                   {getStatusIcon(currentStatus)}
                   {currentStatus}
-                </span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  {formatDate(order.createdAt)}
                 </div>
-
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  {totalItems} {totalItems === 1 ? 'item' : 'items'}
-                </div>
-
-                {userRole === 'supplier' && (
-                  <div className="flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                    {order.retailer?.name || 'Unknown Retailer'}
-                  </div>
-                )}
               </div>
+              <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-sm text-gray-500">
+                {totalItems} {totalItems === 1 ? 'item' : 'items'}
+              </p>
+              <p className="text-lg font-bold text-gray-800">
+                ${(order.totalAmount || 0).toFixed(2)}
+              </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="font-bold text-lg">${(order.totalAmount || 0).toFixed(2)}</div>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5 text-gray-500 transition-transform ${
+                  isExpanded ? 'transform rotate-180' : ''
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
 
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        {/* Info bar */}
+        <div className="bg-gray-50 px-6 py-2 flex justify-between text-sm border-t border-gray-100">
+          <div className="flex items-center gap-4">
+            {userRole === 'supplier' && (
+              <div className="flex items-center gap-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transition-transform ${
-                    isExpanded ? 'transform rotate-180' : ''
-                  }`}
+                  className="h-4 w-4 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor">
@@ -276,44 +243,98 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-              </button>
+                <span className="text-gray-600">{order.retailer?.name || 'Unknown Retailer'}</span>
+              </div>
+            )}
+            <div className="text-gray-600 font-mono text-xs">
+              ID: {order._id.slice(0, 8)}...{order._id.slice(-8)}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div
-        className={`transition-all duration-300 overflow-hidden ${
-          isExpanded ? 'max-h-96' : 'max-h-0'
-        }`}>
-        <div className="p-6">
-          <div className="mb-6">
-            <h4 className="font-medium mb-3 text-gray-700">Order Items</h4>
-            <div className="rounded-lg border overflow-hidden">
+          {userRole === 'supplier' && !isExpanded && (
+            <div className="flex items-center gap-2">
+              <select
+                disabled={isUpdating}
+                value={currentStatus}
+                onChange={(e) => handleStatusUpdate(e.target.value)}
+                className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                <option value="Pending">Pending</option>
+                <option value="Accepted">Accept</option>
+                <option value="Shipped">Ship</option>
+                <option value="Cancelled">Cancel</option>
+              </select>
+              {isUpdating && (
+                <svg
+                  className="animate-spin h-4 w-4 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Expandable content */}
+        <div
+          className={`transition-all duration-300 overflow-hidden ${
+            isExpanded ? 'max-h-screen' : 'max-h-0'
+          }`}>
+          {/* Order items */}
+          <div className="p-6 border-t border-gray-100">
+            <h4 className="font-medium mb-4 text-gray-700 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
+              Order Items
+            </h4>
+
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Product
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity
+                      className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Qty
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Price
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Total
                     </th>
                   </tr>
@@ -321,26 +342,26 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {order.items?.map((item, index) => (
                     <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-800">
                           {item.product?.name || 'Unknown Product'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-sm text-gray-900">{item.quantity || 0}</div>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                        <div className="text-sm text-gray-600">{item.quantity || 0}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-sm text-gray-900">${(item.price || 0).toFixed(2)}</div>
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
+                        <div className="text-sm text-gray-600">${(item.price || 0).toFixed(2)}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-sm font-medium">
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
+                        <div className="text-sm font-medium text-gray-800">
                           ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
                         </div>
                       </td>
                     </tr>
                   )) || (
                     <tr>
-                      <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan="4" className="px-4 py-3 text-center text-sm text-gray-500">
                         No items available
                       </td>
                     </tr>
@@ -351,10 +372,10 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
                     <th
                       scope="row"
                       colSpan="3"
-                      className="px-6 py-3 text-right text-sm font-medium text-gray-900">
+                      className="px-4 py-3 text-right text-sm font-medium text-gray-700">
                       Order Total
                     </th>
-                    <td className="px-6 py-3 text-right text-sm font-bold">
+                    <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">
                       ${(order.totalAmount || 0).toFixed(2)}
                     </td>
                   </tr>
@@ -363,46 +384,71 @@ const OrderCard = ({ order, userRole, onRefresh }) => {
             </div>
           </div>
 
+          {/* Shipping Address */}
           {order.shippingAddress && (
-            <div className="mb-6">
-              <h4 className="font-medium mb-2 text-gray-700">Shipping Address</h4>
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm">
+            <div className="px-6 pb-6">
+              <h4 className="font-medium mb-3 text-gray-700 flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-gray-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                Shipping Address
+              </h4>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm text-gray-700">
                 {order.shippingAddress}
               </div>
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-2 border-t">
-            <div className="text-sm text-gray-500">Order ID: {order._id}</div>
-
-            {userRole === 'supplier' && (
-              <div className="relative">
-                <select
-                  value={currentStatus}
-                  onChange={(e) => handleStatusUpdate(e.target.value)}
-                  disabled={isUpdating || !order._id}
-                  className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50">
-                  <option value="Pending">Pending</option>
-                  <option value="Accepted">Accept Order</option>
-                  <option value="Shipped">Mark as Shipped</option>
-                  <option value="Cancelled">Cancel Order</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg
-                    className="fill-current h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
-                {isUpdating && (
-                  <div className="absolute right-0 top-0 mt-2 mr-10">
-                    <div className="animate-spin h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full"></div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Action buttons */}
+          {userRole === 'supplier' && (
+            <div className="px-6 pb-6 flex justify-end gap-2">
+              <select
+                disabled={isUpdating}
+                value={currentStatus}
+                onChange={(e) => handleStatusUpdate(e.target.value)}
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400">
+                <option value="Pending">Pending</option>
+                <option value="Accepted">Accept Order</option>
+                <option value="Shipped">Mark as Shipped</option>
+                <option value="Cancelled">Cancel Order</option>
+              </select>
+              {isUpdating && (
+                <svg
+                  className="animate-spin h-5 w-5 text-gray-500 mt-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
