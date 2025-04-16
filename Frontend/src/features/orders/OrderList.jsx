@@ -11,69 +11,71 @@ const OrderList = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
-  const { state } = useLocation(); // Access navigation state
+  const { state } = useLocation();
 
- const fetchOrders = async (retryCount = 0, maxRetries = 3) => {
-   try {
-     setLoading(true);
-     setError(null);
-     console.log('Fetching orders for user:', user.role, 'newOrderId:', state?.newOrderId);
-     const { data } =
-       user.role === 'supplier' ? await getSupplierOrders() : await getRetailerOrders();
+  const fetchOrders = async (retryCount = 0, maxRetries = 3) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Fetching orders for user:', user.role, 'newOrderId:', state?.newOrderId);
+      const { data } =
+        user.role === 'supplier' ? await getSupplierOrders() : await getRetailerOrders();
 
-     console.log('Fetched orders:', data);
+      console.log('Fetched orders:', data);
 
-     // Validate orders
-     const validOrders = data.filter((order) => {
-       if (!order?._id || order._id === '' || order._id === null) {
-         console.warn('Invalid order (missing or empty _id):', order);
-         return false;
-       }
-       return true;
-     });
+      // Validate orders
+      const validOrders = data.filter((order) => {
+        if (!order?._id || order._id === '' || order._id === null) {
+          console.warn('Invalid order (missing or empty _id):', order);
+          return false;
+        }
+        return true;
+      });
 
-     // If newOrderId is present, check if it's in validOrders
-     const newOrderId = state?.newOrderId;
-     let finalOrders = validOrders;
+      // If newOrderId is present, check if it's in validOrders
+      const newOrderId = state?.newOrderId;
+      let finalOrders = validOrders;
 
-     if (
-       newOrderId &&
-       !validOrders.some((order) => order._id === newOrderId) &&
-       retryCount < maxRetries
-     ) {
-       console.log(`New order ${newOrderId} not found, retrying (${retryCount + 1}/${maxRetries})`);
-       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s
-       return fetchOrders(retryCount + 1, maxRetries);
-     }
+      if (
+        newOrderId &&
+        !validOrders.some((order) => order._id === newOrderId) &&
+        retryCount < maxRetries
+      ) {
+        console.log(
+          `New order ${newOrderId} not found, retrying (${retryCount + 1}/${maxRetries})`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s
+        return fetchOrders(retryCount + 1, maxRetries);
+      }
 
-     // Fallback: Fetch specific order by newOrderId
-     if (newOrderId && !validOrders.some((order) => order._id === newOrderId)) {
-       console.log(`Attempting to fetch order ${newOrderId} directly`);
-       try {
-         const { data: newOrder } = await getOrderById(newOrderId);
-         if (newOrder?._id && newOrder._id !== '' && newOrder._id !== null) {
-           console.log('Fetched new order:', newOrder);
-           finalOrders = [...validOrders, newOrder];
-         } else {
-           console.warn('Fetched order is invalid:', newOrder);
-         }
-       } catch (err) {
-         console.error(`Failed to fetch order ${newOrderId}:`, err);
-       }
-     }
+      // Fallback: Fetch specific order by newOrderId
+      if (newOrderId && !validOrders.some((order) => order._id === newOrderId)) {
+        console.log(`Attempting to fetch order ${newOrderId} directly`);
+        try {
+          const { data: newOrder } = await getOrderById(newOrderId);
+          if (newOrder?._id && newOrder._id !== '' && newOrder._id !== null) {
+            console.log('Fetched new order:', newOrder);
+            finalOrders = [...validOrders, newOrder];
+          } else {
+            console.warn('Fetched order is invalid:', newOrder);
+          }
+        } catch (err) {
+          console.error(`Failed to fetch order ${newOrderId}:`, err);
+        }
+      }
 
-     setOrders(finalOrders);
+      setOrders(finalOrders);
 
-     if (newOrderId && !finalOrders.some((order) => order._id === newOrderId)) {
-       console.warn(`New order ${newOrderId} not found after retries and direct fetch`);
-     }
-   } catch (err) {
-     console.error('Order fetch error:', err);
-     setError('Failed to load orders: ' + err.message);
-   } finally {
-     setLoading(false);
-   }
- };
+      if (newOrderId && !finalOrders.some((order) => order._id === newOrderId)) {
+        console.warn(`New order ${newOrderId} not found after retries and direct fetch`);
+      }
+    } catch (err) {
+      console.error('Order fetch error:', err);
+      setError('Failed to load orders: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -96,33 +98,32 @@ const OrderList = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="w-full max-w-6xl px-4">
-          <div className="flex items-center mb-8">
-            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="h-8 w-48 bg-gray-200 rounded-full animate-pulse"></div>
+            <div className="h-10 w-40 bg-gray-200 rounded-full animate-pulse"></div>
           </div>
-          <div className="animate-pulse space-y-6">
+          <div className="flex gap-2 mb-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-10 w-24 bg-gray-200 rounded-full animate-pulse"></div>
+            ))}
+          </div>
+          <div className="animate-pulse space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex justify-between mb-6">
-                  <div className="space-y-3">
-                    <div className="h-5 bg-gray-200 rounded w-24"></div>
-                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div key={i} className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex justify-between mb-4">
+                  <div className="space-y-2">
+                    <div className="h-6 bg-gray-200 rounded-full w-40"></div>
+                    <div className="h-4 bg-gray-200 rounded-full w-60"></div>
                   </div>
-                  <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  <div className="h-8 bg-gray-200 rounded-full w-24"></div>
                 </div>
-                <div className="space-y-4 mb-6">
+                <div className="space-y-3 mb-4">
                   {[...Array(2)].map((_, j) => (
-                    <div key={j} className="flex justify-between py-3 border-b">
-                      <div className="space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-40"></div>
-                        <div className="h-3 bg-gray-200 rounded w-24"></div>
-                      </div>
-                      <div className="h-4 bg-gray-200 rounded w-16"></div>
+                    <div key={j} className="flex justify-between py-2">
+                      <div className="h-4 bg-gray-200 rounded-full w-1/3"></div>
+                      <div className="h-4 bg-gray-200 rounded-full w-20"></div>
                     </div>
                   ))}
-                </div>
-                <div className="flex justify-between">
-                  <div className="h-5 bg-gray-200 rounded w-24"></div>
-                  <div className="h-8 bg-gray-200 rounded w-32"></div>
                 </div>
               </div>
             ))}
@@ -134,11 +135,11 @@ const OrderList = () => {
   if (error)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white shadow-lg rounded-xl p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center">
+        <div className="max-w-md w-full bg-white shadow-lg rounded-2xl p-8">
+          <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-full flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-red-500"
+              className="h-12 w-12 text-red-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor">
@@ -150,11 +151,24 @@ const OrderList = () => {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold mb-2">Error Loading Orders</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <h2 className="text-3xl font-bold mb-3 text-center">Error Loading Orders</h2>
+          <p className="text-gray-600 mb-8 text-center">{error}</p>
           <button
             onClick={() => fetchOrders()}
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            className="w-full px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium flex items-center justify-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
             Retry
           </button>
         </div>
@@ -164,12 +178,14 @@ const OrderList = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
+        {/* Header with new design */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
+          <div className="mb-6 sm:mb-0">
+            <h1 className="text-4xl font-bold mb-2 flex items-center">
+              <span className="inline-block w-2 h-8 bg-black mr-3 rounded"></span>
               {user.role === 'supplier' ? 'Incoming' : 'Your'} Orders
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 pl-5">
               {filteredOrders.length} {filteredOrders.length === 1 ? 'order' : 'orders'}{' '}
               {filter !== 'all' ? `with status "${filter}"` : ''}
             </p>
@@ -178,10 +194,10 @@ const OrderList = () => {
           {user.role === 'retailer' && (
             <button
               onClick={() => navigate('/orders/create')}
-              className="mt-4 sm:mt-0 flex items-center px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+              className="flex items-center px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors gap-2 font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -197,43 +213,52 @@ const OrderList = () => {
           )}
         </div>
 
-        <div className="mb-6 bg-white rounded-lg p-1 inline-flex shadow-sm">
+        {/* Filter tabs with new design */}
+        <div className="mb-8 flex flex-wrap gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-md ${
-              filter === 'all' ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'
-            } transition-colors`}>
+            className={`px-5 py-2.5 rounded-xl transition-all ${
+              filter === 'all'
+                ? 'bg-black text-white shadow-md'
+                : 'bg-white text-gray-700 border border-gray-200 hover:border-black'
+            }`}>
             All ({statusCounts.all || 0})
           </button>
           <button
             onClick={() => setFilter('Pending')}
-            className={`px-4 py-2 rounded-md ${
-              filter === 'Pending' ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'
-            } transition-colors`}>
+            className={`px-5 py-2.5 rounded-xl transition-all ${
+              filter === 'Pending'
+                ? 'bg-black text-white shadow-md'
+                : 'bg-white text-gray-700 border border-gray-200 hover:border-black'
+            }`}>
             Pending ({statusCounts.Pending || 0})
           </button>
           <button
             onClick={() => setFilter('Accepted')}
-            className={`px-4 py-2 rounded-md ${
-              filter === 'Accepted' ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'
-            } transition-colors`}>
+            className={`px-5 py-2.5 rounded-xl transition-all ${
+              filter === 'Accepted'
+                ? 'bg-black text-white shadow-md'
+                : 'bg-white text-gray-700 border border-gray-200 hover:border-black'
+            }`}>
             Accepted ({statusCounts.Accepted || 0})
           </button>
           <button
             onClick={() => setFilter('Shipped')}
-            className={`px-4 py-2 rounded-md ${
-              filter === 'Shipped' ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'
-            } transition-colors`}>
+            className={`px-5 py-2.5 rounded-xl transition-all ${
+              filter === 'Shipped'
+                ? 'bg-black text-white shadow-md'
+                : 'bg-white text-gray-700 border border-gray-200 hover:border-black'
+            }`}>
             Shipped ({statusCounts.Shipped || 0})
           </button>
         </div>
 
         {filteredOrders.length === 0 ? (
-          <div className="bg-white shadow-sm p-12 text-center rounded-xl">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+          <div className="bg-white shadow-md p-12 text-center rounded-2xl">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 text-gray-400"
+                className="h-12 w-12 text-gray-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -245,8 +270,8 @@ const OrderList = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2">No Orders Found</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-3xl font-bold mb-3">No Orders Found</h2>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
               {filter !== 'all'
                 ? `You don't have any orders with the status "${filter}"`
                 : user.role === 'supplier'
@@ -256,7 +281,7 @@ const OrderList = () => {
             {user.role === 'retailer' && filter === 'all' && (
               <button
                 onClick={() => navigate('/orders/create')}
-                className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+                className="px-8 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium">
                 Create Your First Order
               </button>
             )}
